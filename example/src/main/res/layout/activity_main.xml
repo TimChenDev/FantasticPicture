@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity"
+    tools:ignore="HardcodedText">
+
+    <Button
+        android:id="@+id/btnRequestPermission"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Request Permission" />
+
+    <Button
+        android:id="@+id/btnTakePicture"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Take Picture" />
+
+    <Button
+        android:id="@+id/btnGalleryPicture"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Gallery Picture" />
+
+    <Button
+        android:id="@+id/btnSaveImageBitmap"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save Image Bitmap" />
+
+    <ImageView
+        android:id="@+id/ivPicture"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:background="#777777"
+        android:padding="4dp" />
+</LinearLayout>

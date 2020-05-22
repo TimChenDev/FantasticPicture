@@ -1,0 +1,2 @@
+include ':example', ':fantasticpicture'
+rootProject.name='FantasticPicture'
