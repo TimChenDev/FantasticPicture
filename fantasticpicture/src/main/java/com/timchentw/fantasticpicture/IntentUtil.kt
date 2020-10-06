@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager.MATCH_DEFAULT_ONLY
 import android.content.pm.ResolveInfo
 import android.net.Uri
+import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import com.timchentw.fantasticpicture.FantasticPicture.Companion.FANTASTIC_TAG
@@ -61,13 +62,19 @@ object IntentUtil {
     fun dispatchPickFromGalleryIntent(activity: Activity) {
 
         // Create an Intent with action as ACTION_PICK
-        val intent = Intent(Intent.ACTION_PICK)
+        val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            Intent(Intent.ACTION_OPEN_DOCUMENT)
+        } else {
+            Intent(Intent.ACTION_PICK)
+        }
         // Sets the type as image/*. This ensures only components of type image are selected
         intent.type = "image/*"
         // We pass an extra array with the accepted mime types.
         // This will ensure only components with these MIME types as targeted.
         val mimeTypes = arrayOf("image/jpeg", "image/png")
-        intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
+        }
         // Launching the Intent
         activity.startActivityForResult(intent, GALLERY_REQUEST_CODE)
     }
