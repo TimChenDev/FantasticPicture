@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
+import androidx.fragment.app.Fragment
 import com.timchentw.fantasticpicture.FantasticPicture.Companion.FANTASTIC_TAG
 import com.timchentw.fantasticpicture.PathUtil.getFileUri
 
@@ -29,10 +30,19 @@ object IntentUtil {
     /**
      * 拍照
      *
-     * 指定 Uri, onActivityResult 會收到 null data, 收到通知後要到指定位置取得圖片
+     * 若不指定儲存地點, 可直接於 onActivityResult 取得 data
+     * 若指定儲存地點, onActivityResult 會收到 null data, 必須到指定地點讀取圖片
+     *
+     * @param activity 從 activity 發起 startActivityForResult
+     * @param fragment 從 fragment 發起 startActivityForResult
+     * @param isCustomUri 決定是否指定儲存地點
      */
     @JvmStatic
-    fun dispatchTakePictureIntent(activity: Activity, isCustomUri: Boolean = true) {
+    fun dispatchTakePictureIntent(
+        activity: Activity,
+        fragment: Fragment? = null,
+        isCustomUri: Boolean = true
+    ) {
 
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 
@@ -51,16 +61,25 @@ object IntentUtil {
                 }
             }
             // Launching the Intent
-            activity.startActivityForResult(intent, TAKE_PHOTO_REQUEST_CODE)
+            if (fragment == null) {
+                activity.startActivityForResult(intent, TAKE_PHOTO_REQUEST_CODE)
+            } else {
+                fragment.startActivityForResult(intent, TAKE_PHOTO_REQUEST_CODE)
+            }
         }
     }
 
     /**
      * 從相簿選擇圖片
+     *
+     * @param activity 從 activity 發起 startActivityForResult
+     * @param fragment 從 fragment 發起 startActivityForResult
      */
     @JvmStatic
-    fun dispatchPickFromGalleryIntent(activity: Activity) {
-
+    fun dispatchPickFromGalleryIntent(
+        activity: Activity,
+        fragment: Fragment? = null
+    ) {
         // Create an Intent with action as ACTION_PICK
         val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             Intent(Intent.ACTION_OPEN_DOCUMENT)
@@ -76,16 +95,27 @@ object IntentUtil {
             intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
         }
         // Launching the Intent
-        activity.startActivityForResult(intent, GALLERY_REQUEST_CODE)
+        if (fragment == null) {
+            activity.startActivityForResult(intent, GALLERY_REQUEST_CODE)
+        } else {
+            fragment.startActivityForResult(intent, GALLERY_REQUEST_CODE)
+        }
     }
 
     /**
      * 使用內建相片編輯功能裁切圖片
      *
+     * @param activity 從 activity 發起 startActivityForResult
+     * @param fragment 從 fragment 發起 startActivityForResult
      * @param sourceUri 圖片來源路徑, scheme 不限
      * @param targetUri 儲存路徑, scheme 限定 "file:"
      */
-    fun dispatchCropPicture(activity: Activity, sourceUri: Uri, targetUri: Uri) {
+    fun dispatchCropPicture(
+        activity: Activity,
+        sourceUri: Uri,
+        targetUri: Uri,
+        fragment: Fragment? = null
+    ) {
 
         val intent = Intent("com.android.camera.action.CROP")
         // 輸入圖片來源
@@ -117,7 +147,11 @@ object IntentUtil {
             Log.e(FANTASTIC_TAG, SECOND_TAG + "No activity could handle this intent")
         } else {
             // Launching the Intent
-            activity.startActivityForResult(intent, CROP_REQUEST_CODE)
+            if (fragment == null) {
+                activity.startActivityForResult(intent, CROP_REQUEST_CODE)
+            } else {
+                fragment.startActivityForResult(intent, CROP_REQUEST_CODE)
+            }
         }
     }
 }

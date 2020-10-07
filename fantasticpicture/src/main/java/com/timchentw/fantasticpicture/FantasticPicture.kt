@@ -15,7 +15,13 @@ import java.io.IOException
  *  author: Tim Chen
  *  time  : 2020-05-16
  *  desc  :
- *  圖片壓縮工具, 可指定圖片尺寸像素限制, 設定檔案大小限制
+ *
+ *  輸入Uri，輸出Bitmap的工具
+ *
+ *  自帶壓縮、切割、轉向的功能，可自定義像素限制、檔案大小限制
+ *
+ *  主要流程請參閱 getFantasticBitmapFromUri 這個 function
+ *  @see getFantasticBitmapFromUri()
  */
 @Suppress("unused")
 class FantasticPicture(private val mContext: Context) {
@@ -45,6 +51,13 @@ class FantasticPicture(private val mContext: Context) {
          */
         const val CUT_SQUARE = false
 
+        /**
+         * 是否自動校正方向, 預設值為 false
+         * 如果有使用 Crop 去進行裁減, 裁減工具有自帶旋轉方向的功能, 可省去此步驟
+         * 如果沒有使用剪裁工具, 可以設定成 true, 將可針對照片拍攝當下的旋轉腳度進行修正
+         */
+        const val MODIFY_ORIENTATION = false
+
         @JvmStatic
         fun init(context: Context): FantasticPicture {
             return FantasticPicture(context)
@@ -62,10 +75,22 @@ class FantasticPicture(private val mContext: Context) {
      */
     private var mSizeLimit = SIZE_LIMIT
 
+    /**
+     * 圖片品質從 100(無壓縮, 品質最高) 開始遞減, 最低至 0(品質最低)
+     * 壓縮圖片的品質遞減速度, 每次降低 n 個品質, 預設為 COMPRESSION, 直到符合檔案大小限制後停止
+     * @see COMPRESSION
+     */
     private var mCompression = COMPRESSION
 
+    /**
+     * 是否輸出正方形, 若為是, 會自動擷取長方形中間的正方形, 預設不使用
+     */
     private var mCutSquare = CUT_SQUARE
 
+    /**
+     * 是否自動修正圖片方向
+     */
+    private var mModifyOrientation = MODIFY_ORIENTATION
 
     /**
      * 設定限制圖片像素的尺寸大小限制, 單位: pixel
@@ -98,6 +123,16 @@ class FantasticPicture(private val mContext: Context) {
     }
 
     /**
+     * 設定是否自動修正圖片方向
+     *
+     * @param modify 是否自動修正圖片方向
+     */
+    fun modifyOrientation(modify: Boolean): FantasticPicture {
+        mModifyOrientation = modify
+        return this
+    }
+
+    /**
      * 依照流程一步一步去對圖片進行壓縮、切割、轉向
      *
      * @param uri image uri
@@ -118,7 +153,9 @@ class FantasticPicture(private val mContext: Context) {
             // Step 4. 壓縮圖片品質
             bitmap = compressBitmap(bitmap)
             // Step 5. 校正圖片方向
-            bitmap = modifyBitmapOrientation(bitmap, uri)
+            if (mModifyOrientation) {
+                bitmap = modifyBitmapOrientation(bitmap, uri)
+            }
             return bitmap
         } catch (exception: IOException) {
             Log.e(FANTASTIC_TAG, "getBitmapFromUri, IOException.message: ${exception.message}")

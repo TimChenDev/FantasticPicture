@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -33,6 +34,21 @@ class MainActivity : AppCompatActivity(), PermissionCallbacks {
         const val SECOND_TAG = "MainActivity: "
     }
 
+    private val permissionList by lazy {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            arrayOf(
+                Manifest.permission.CAMERA,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            )
+        } else {
+            arrayOf(
+                Manifest.permission.CAMERA,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            )
+        }
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +59,7 @@ class MainActivity : AppCompatActivity(), PermissionCallbacks {
         }
 
         btnTakePicture.setOnClickListener {
-            dispatchTakePictureIntent(this, true)
+            dispatchTakePictureIntent(activity = this)
         }
 
         btnGalleryPicture.setOnClickListener {
@@ -105,12 +121,8 @@ class MainActivity : AppCompatActivity(), PermissionCallbacks {
     // region EasyPermissions PermissionCallbacks
 
     override fun onPermissionsGranted(requestCode: Int, perms: List<String?>) {
-        val permsList = arrayOf(
-            Manifest.permission.CAMERA,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        )
-        if (EasyPermissions.hasPermissions(this, *permsList)) {
+
+        if (EasyPermissions.hasPermissions(this, *permissionList)) {
             Toast.makeText(this, "Permissions granted", Toast.LENGTH_SHORT).show()
         }
     }
@@ -125,20 +137,14 @@ class MainActivity : AppCompatActivity(), PermissionCallbacks {
 
     private fun requestPermissions() {
 
-        val perms = arrayOf(
-            Manifest.permission.CAMERA,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        )
-
-        if (EasyPermissions.hasPermissions(applicationContext, *perms)) {
+        if (EasyPermissions.hasPermissions(applicationContext, *permissionList)) {
             Toast.makeText(this, "Already has Permissions", Toast.LENGTH_SHORT).show()
         } else {
             EasyPermissions.requestPermissions(
                 this@MainActivity,
                 "This app needs access to your camera and write access to record video",
                 1111,
-                *perms
+                *permissionList
             )
         }
     }
