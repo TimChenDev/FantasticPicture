@@ -6,7 +6,7 @@
 
 ## Installation
 
-Add the JitPack repository to your build file
+Add the JitPack repository to your build.gradle file
 
 ``` gradle
 allprojects {
@@ -17,7 +17,7 @@ allprojects {
 }
 ```
 
-Adding the following dependency to your build.gradle file:
+Add the following dependency to your app/build.gradle file:
 
 ``` gradle
 dependencies {
