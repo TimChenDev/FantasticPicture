@@ -6,11 +6,22 @@
 
 ## Installation
 
+Add the JitPack repository to your build file
+
+``` gradle
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
+}
+```
+
 Adding the following dependency to your build.gradle file:
 
 ``` gradle
 dependencies {
-    implementation 'com.github.TimChenDev:FantasticPicture:1.0.0'
+    implementation 'com.github.TimChenDev:FantasticPicture:1.1.0'
 }
 ```
 
